@@ -60,7 +60,6 @@ pair<vector<vector<float>>, vector<vector<int>>> WWWWW_1(vector<float> w, vector
             if (k >= t) money = w[k];
             else if (k >= s) money = w[s];
             else money = 0;
-            //float prob = min(0.5 + p[k] / 2, 0.999f); //original line with a float and double conflict 
             float prob = min(0.5f + p[k] / 2.0f, 0.999f); //fixed line -- changed to float and float
             money += prob * dp[1][i - k] - (i - k) * w[i - k + 1] * 10;
             if (money > max_money_1) {
