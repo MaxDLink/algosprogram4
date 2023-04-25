@@ -6,7 +6,7 @@ using namespace std;
 //driver program should be indexed at zero. He will fix this? 
 pair< vector<float>, vector<int> >  WWWWW(vector<float> w, vector<float> p, int s, int t)
 {
-     int n = w.size();
+    int n = w.size();
     vector<int> a(n);
 
     for (int i = 0; i < n; i++) {
@@ -14,7 +14,7 @@ pair< vector<float>, vector<int> >  WWWWW(vector<float> w, vector<float> p, int 
     }
 
     sort(a.begin(), a.end(), [&](int i, int j) {
-        return w[i] * p[j] > w[j] * p[i];
+        return w[i] / p[i] > w[j] / p[j];
     });
 
     float sum_w = 0.0, sum_p = 0.0;
@@ -57,19 +57,24 @@ pair< vector<float>, vector<int> >  WWWWW(vector<float> w, vector<float> p, int 
 pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_1(vector<float> w, vector<float> p, int s, int t)
 {
     int n = w.size();
-    vector<vector<float>> dp(n + 1, vector<float>(t + 1, 0));
-    vector<vector<int>> prev(n + 1, vector<int>(t + 1, -1));
+    vector<vector<float> > dp(n + 1, vector<float>(t + 1, 0));
+    vector<vector<int> > prev(n + 1, vector<int>(t + 1, -1));
 
-    for (int i = 1; i <= n; i++) {
-        for (int j = s; j <= t; j++) {
-            if (j >= w[i - 1]) {
+    for (int i = 1; i <= n; i++)
+    {
+        for (int j = s; j <= t; j++)
+        {
+            if (j >= w[i - 1])
+            {
                 float val = dp[i - 1][j - w[i - 1]] + p[i - 1];
-                if (val > dp[i][j]) {
+                if (val > dp[i][j])
+                {
                     dp[i][j] = val;
                     prev[i][j] = j - w[i - 1];
                 }
             }
-            if (dp[i - 1][j] > dp[i][j]) {
+            if (dp[i - 1][j] > dp[i][j])
+            {
                 dp[i][j] = dp[i - 1][j];
                 prev[i][j] = j;
             }
@@ -78,22 +83,25 @@ pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_1(vector<float> w
 
     vector<int> items;
     int j = t;
-    for (int i = n; i >= 1; i--) {
-        if (prev[i][j] != j) {
+    for (int i = n; i >= 1; i--)
+    {
+        if (prev[i][j] != j)
+        {
             items.push_back(i - 1);
             j = prev[i][j];
         }
     }
     reverse(items.begin(), items.end());
 
-    return make_pair(dp, vector<vector<int>>{items});
+    return make_pair(dp, vector<vector<int> >(1, items));
+
 }
 
 pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_2(vector<float> w, vector<float> p, int s, int t)
 {
    int n = w.size();
-    vector<vector<float>> dist(n, vector<float>(n, numeric_limits<float>::infinity()));
-    vector<vector<int>> parent(n, vector<int>(n, -1));
+    vector<vector<float> > dist(n, vector<float>(n, numeric_limits<float>::infinity()));
+    vector<vector<int> > parent(n, vector<int>(n, -1));
 
     for (int i = 0; i < n; i++) {
         dist[i][i] = 0.0;
@@ -118,8 +126,8 @@ pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_2(vector<float> w
         }
     }
 
-    vector<vector<float>> weights;
-    vector<vector<int>> paths;
+    vector<vector<float> > weights;
+    vector<vector<int> > paths;
 
     for (int i = 0; i < n; i++) {
         for (int j = i + 1; j < n; j++) {
