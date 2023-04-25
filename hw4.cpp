@@ -2,6 +2,8 @@
 
 using namespace std;
 //random values are stuffed into these functions so that output is printed. These values should be changed. 
+//no late pass will be used for this assignment.
+//driver program should be indexed at zero. He will fix this? 
 pair< vector<float>, vector<int> >  WWWWW(vector<float>, vector<float>, int, int)
 {
     vector <float> res0;
