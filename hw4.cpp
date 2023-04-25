@@ -75,8 +75,8 @@ pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_1(vector<float> w
  pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_2(vector<float> w, vector<float> p, int s, int t)
  {
    int j = w.size() - 1;
-    vector<vector<float>> a(2, vector<float>(j+1));
-    vector<vector<int>> b(2, vector<int>(j));
+    vector<vector<float> > a(2, vector<float>(j+1));
+    vector<vector<int> > b(2, vector<int>(j));
     float eps = 1e-3;
 
     // compute expected winnings without using any lifelines
@@ -144,8 +144,14 @@ pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_1(vector<float> w
     }
 
     // return the results
-    vector<vector<float>> expected_winnings = {a[0], a[1]};
-    vector<vector<int>> lifelines_used = {b[0], b[1]};
+    vector<vector<float> > expected_winnings(2);
+    expected_winnings[0] = a[0];
+    expected_winnings[1] = a[1];
+
+    vector<vector<int> > lifelines_used;
+    lifelines_used.push_back(b[0]);
+    lifelines_used.push_back(b[1]);
+
     return make_pair(expected_winnings, lifelines_used);
 }
 
