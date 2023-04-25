@@ -7,50 +7,25 @@ using namespace std;
 
 pair< vector<float>, vector<int> >  WWWWW(vector<float> w, vector<float> p, int s, int t)
 {
-    int n = w.size();
-    vector<int> a(n);
-
-    for (int i = 0; i < n; i++) {
-        a[i] = i;
-    }
-
-    sort(a.begin(), a.end(), [&](int i, int j) {return w[i] / p[i] > w[j] / p[j];});
-
-
-    float sum_w = 0.0, sum_p = 0.0;
-    vector<float> x(n, 0.0);
-
-    for (int k = 0; k < n; k++) {
-        int i = a[k];
-        if (sum_p + p[i] <= t) {
-            x[i] = 1.0;
-            sum_p += p[i];
-            sum_w += w[i];
-        } else {
-            x[i] = (t - sum_p) / p[i];
-            sum_w += w[i] * x[i];
-            sum_p = t;
-            break;
-        }
-    }
-
-    if (sum_p < s) {
-        for (int k = n - 1; k >= 0; k--) {
-            int i = a[k];
-            if (sum_p + p[i] >= s) {
-                x[i] = (s - sum_p) / p[i];
-                sum_w += w[i] * x[i];
-                sum_p = s;
-                break;
-            } else {
-                x[i] = 1.0;
-                sum_p += p[i];
-                sum_w += w[i];
+    int j = w.size() - 1;
+    vector<float> E(j+1, 0);
+    vector<int> Q(j+1, 0);
+    E[1] = w[1]*p[1];
+    Q[1] = 0;
+    for (int i=2; i<=j; i++) {
+        float max_val = w[i];
+        for (int k=1; k<i; k++) {
+            float val = w[k] + (1-p[k])*E[k-1];
+            if (val > max_val) {
+                max_val = val;
             }
         }
+        E[i] = max_val;
+        if (w[i] > max_val) {
+            Q[i] = 1;
+        }
     }
-
-    return make_pair(x, a);
+    return make_pair(E, Q);
 
 }
 
