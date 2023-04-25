@@ -76,7 +76,7 @@ int main()
 	{
 	   for (int i = 0; i < res_extra2.first[k].size(); i++)
 		{
-		   float x = round(res_extra2.first[k][i] * 1000) / 1000.0;    
+		   float x = round(res_extra2.first[k][i] * 1000) / 1000.0;   
 		   cout << x << " ";
 		}
 	   cout << endl;
