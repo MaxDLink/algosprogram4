@@ -1,7 +1,7 @@
 #include <vector>
 
 using namespace std;
-
+//random values are stuffed into these functions so that output is printed. These values should be changed. 
 pair< vector<float>, vector<int> >  WWWWW(vector<float>, vector<float>, int, int)
 {
     vector <float> res0;
