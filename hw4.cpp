@@ -31,7 +31,7 @@ pair< vector<float>, vector<int> >  WWWWW(vector<float> w, vector<float> p, int 
 
 pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_1(vector<float> w, vector<float> p, int s, int t)
 {
-    int n = w.size();
+ int n = w.size();
     vector<vector<float> > dp(n + 1, vector<float>(t + 1, 0));
     vector<vector<int> > prev(n + 1, vector<int>(t + 1, -1));
 
@@ -68,25 +68,39 @@ pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_1(vector<float> w
     }
     reverse(items.begin(), items.end());
 
-    return make_pair(dp, vector<vector<int> >(1, items));
+    // Resize the vectors to the actual size
+    vector<vector<float> > res_first(2, vector<float>(items.size()));
+    vector<vector<int> > res_second(2, vector<int>(items.size()));
+    for (int k = 0; k <= 1; k++) {
+        for (int i = 0; i < items.size(); i++) {
+            res_first[k][i] = dp[k * (n + 1) / 2 + items[i] + 1][t];
+            res_second[k][i] = items[i];
+        }
+    }
+
+    return make_pair(res_first, res_second);
 
 }
 
  pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_2(vector<float> w, vector<float> p, int s, int t)
  {
-   int j = w.size() - 1;
-    vector<vector<float> > a(2, vector<float>(j+1));
+    int j = w.size() - 1;
+    vector<vector<float> > a(2, vector<float>(j + 1));
     vector<vector<int> > b(2, vector<int>(j));
     float eps = 1e-3;
 
     // compute expected winnings without using any lifelines
-    for (int k = 0; k <= j; k++) {
+    for (int k = 0; k <= j; k++)
+    {
         a[0][k] = w[k];
     }
-    for (int k = 1; k <= j; k++) {
-        for (int i = k-1; i >= 0; i--) {
+    for (int k = 1; k <= j; k++)
+    {
+        for (int i = k - 1; i >= 0; i--)
+        {
             float sum = 0.0;
-            for (int l = i+1; l <= j; l++) {
+            for (int l = i + 1; l <= j; l++)
+            {
                 sum += p[l] * a[0][l];
             }
             a[0][i] = max(sum, w[i]);
@@ -94,14 +108,18 @@ pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_1(vector<float> w
     }
 
     // compute expected winnings using only the "Get Easier" lifeline
-    for (int k = 0; k <= j; k++) {
+    for (int k = 0; k <= j; k++)
+    {
         a[1][k] = w[k];
     }
-    for (int k = 1; k <= j; k++) {
-        for (int i = k-1; i >= 0; i--) {
+    for (int k = 1; k <= j; k++)
+    {
+        for (int i = k - 1; i >= 0; i--)
+        {
             float sum = 0.0;
-            for (int l = i+1; l <= j; l++) {
-                float q = min(0.999f, 0.5f + p[l]/2.0f);
+            for (int l = i + 1; l <= j; l++)
+            {
+                float q = min(0.999f, 0.5f + p[l] / 2.0f);
                 sum += q * a[1][l];
             }
             a[1][i] = max(sum, w[i]);
@@ -109,50 +127,55 @@ pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_1(vector<float> w
     }
 
     // compute expected winnings using both lifelines
-    for (int k = 0; k <= j; k++) {
+    for (int k = 0; k <= j; k++)
+    {
         a[1][k] = max(a[1][k], w[k] - k * 10.0f);
     }
-    for (int k = 1; k <= j; k++) {
-        for (int i = k-1; i >= 0; i--) {
+    for (int k = 1; k <= j; k++)
+    {
+        for (int i = k - 1; i >= 0; i--)
+        {
             float sum = 0.0;
             int q_index = -1;
-            for (int l = i+1; l <= j; l++) {
-                if (a[0][l] - a[0][i] > k * 10.0f) {
+            for (int l = i + 1; l <= j; l++)
+            {
+                if (a[0][l] - a[0][i] > k * 10.0f)
+                {
                     continue;
                 }
-                if (a[1][l] - a[1][i] > k * 10.0f) {
+                if (a[1][l] - a[1][i] > k * 10.0f)
+                {
                     continue;
                 }
-                float q = min(0.999f, 0.5f + p[l]/2.0f);
-                if (a[1][l] - a[1][i] - k * 10.0f > eps) {
-                    q = 1.0f;
-                }
-                if (q_index == -1 || q > min(0.999f, 0.5f + p[q_index]/2.0f)) {
+                float q = min(0.999f, 0.5f + p[l] / 2.0f);
+                sum += q * a[1][l];
+                if (q_index == -1 || q < min(0.999f, 0.5f + p[q_index] / 2.0f))
+                {
                     q_index = l;
                 }
-                sum += q * a[1][l];
             }
-            if (q_index != -1) {
-                b[1][i] = 2;
-                a[1][i] = sum - k * 10;
-                a[1][i] = max(sum - k * 10.0f, w[i]);
-            }
-            else {
-                a[1][i] = max(a[0][i], a[1][i]);
+            a[1][i] = max(sum, w[i] - k * 10.0f);
+            b[0][i] = q_index;
+        }
+    }
+
+    // Resize the vectors to the actual size
+    vector<vector<float> > res_first(2, vector<float>(t - s + 1));
+    vector<vector<int> > res_second(2, vector<int>(t - s));
+    // Copy the relevant part of the result to the resized vectors
+    for (int i = 0; i < 2; i++)
+    {
+        for (int j = s; j <= t; j++)
+        {
+            res_first[i][j - s] = a[i][j];
+            if (j < t)
+            {
+                res_second[i][j - s] = b[i][j];
             }
         }
     }
 
-    // return the results
-    vector<vector<float> > expected_winnings(2);
-    expected_winnings[0] = a[0];
-    expected_winnings[1] = a[1];
-
-    vector<vector<int> > lifelines_used;
-    lifelines_used.push_back(b[0]);
-    lifelines_used.push_back(b[1]);
-
-    return make_pair(expected_winnings, lifelines_used);
+    return make_pair(res_first, res_second); 
 }
 
  
