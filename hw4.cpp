@@ -74,58 +74,79 @@ pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_1(vector<float> w
 
  pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_2(vector<float> w, vector<float> p, int s, int t)
  {
-    int j = w.size() - 1; // number of questions
-    vector<vector<float> > a(3, vector<float>(j+1)); // expected money won
-    vector<vector<int> > b(3, vector<int>(j)); // decisions
-    float lifeline1_penalty = 10.0;
-    float lifeline2_penalty = 15.0;
+   int j = w.size() - 1;
+    vector<vector<float>> a(2, vector<float>(j+1));
+    vector<vector<int>> b(2, vector<int>(j));
+    float eps = 1e-3;
 
-    // First, calculate the expected money won with no lifelines available
-    for (int i = 1; i <= j; i++) {
-        // The expected money won after answering the i-th question correctly is the maximum
-        // of two possibilities: quitting and taking the current winnings, or continuing and
-        // risking a wrong answer.
-        float quit_winnings = w[i-1];
-        float continue_winnings = p[i] * (a[0][i-1] + w[i]) + (1.0 - p[i]) * a[0][0];
-        a[0][i] = max(quit_winnings, continue_winnings);
-        b[0][i-1] = (continue_winnings > quit_winnings) ? 1 : 0;
+    // compute expected winnings without using any lifelines
+    for (int k = 0; k <= j; k++) {
+        a[0][k] = w[k];
     }
-
-    // Now, calculate the expected money won with the "Get easier" lifeline available
-    for (int i = 1; i <= j; i++) {
-        float quit_winnings = w[i-1];
-        float continue_winnings_no_lifeline = p[i] * (a[1][i-1] + w[i]) + (1.0 - p[i]) * a[1][0];
-        float continue_winnings_with_lifeline = 0.0;
-        float lifeline1_p = min(0.5 + p[i]/2.0, 0.999);
-        if (i >= s) {
-            // If the contestant has answered at least s questions correctly, they get the larger prize
-            continue_winnings_with_lifeline = lifeline1_p * (a[1][i-1] + w[t]) + (1.0 - lifeline1_p) * a[1][i];
-        } else if (i >= t) {
-            // If the contestant has answered at least t questions correctly, they get the smaller prize
-            continue_winnings_with_lifeline = lifeline1_p * (a[1][i-1] + w[s]) + (1.0 - lifeline1_p) * a[1][i];
-        } else {
-            // Otherwise, the contestant gets nothing
-            continue_winnings_with_lifeline = 0.0;
-        }
-        // Check if using the lifeline is worth it
-        if (continue_winnings_with_lifeline >= continue_winnings_no_lifeline - lifeline1_penalty) {
-            a[1][i] = continue_winnings_with_lifeline - lifeline1_penalty;
-            b[1][i-1] = 2;
-        } else {
-            a[1][i] = continue_winnings_no_lifeline;
-            b[1][i-1] = 1;
+    for (int k = 1; k <= j; k++) {
+        for (int i = k-1; i >= 0; i--) {
+            float sum = 0.0;
+            for (int l = i+1; l <= j; l++) {
+                sum += p[l] * a[0][l];
+            }
+            a[0][i] = max(sum, w[i]);
         }
     }
 
-    // Finally, calculate the expected money won with the "Get through" lifeline available
-    for (int i = 1; i <= j; i++) {
-        float quit_winnings = w[i-1];
-        float continue_winn;
-
+    // compute expected winnings using only the "Get Easier" lifeline
+    for (int k = 0; k <= j; k++) {
+        a[1][k] = w[k];
+    }
+    for (int k = 1; k <= j; k++) {
+        for (int i = k-1; i >= 0; i--) {
+            float sum = 0.0;
+            for (int l = i+1; l <= j; l++) {
+                float q = min(0.999f, 0.5f + p[l]/2.0f);
+                sum += q * a[1][l];
+            }
+            a[1][i] = max(sum, w[i]);
+        }
     }
 
-    return make_pair(a[2], b[2]);
+    // compute expected winnings using both lifelines
+    for (int k = 0; k <= j; k++) {
+        a[1][k] = max(a[1][k], w[k] - k * 10.0f);
+    }
+    for (int k = 1; k <= j; k++) {
+        for (int i = k-1; i >= 0; i--) {
+            float sum = 0.0;
+            int q_index = -1;
+            for (int l = i+1; l <= j; l++) {
+                if (a[0][l] - a[0][i] > k * 10.0f) {
+                    continue;
+                }
+                if (a[1][l] - a[1][i] > k * 10.0f) {
+                    continue;
+                }
+                float q = min(0.999f, 0.5f + p[l]/2.0f);
+                if (a[1][l] - a[1][i] - k * 10.0f > eps) {
+                    q = 1.0f;
+                }
+                if (q_index == -1 || q > min(0.999f, 0.5f + p[q_index]/2.0f)) {
+                    q_index = l;
+                }
+                sum += q * a[1][l];
+            }
+            if (q_index != -1) {
+                b[1][i] = 2;
+                a[1][i] = sum - k * 10;
+                a[1][i] = max(sum - k * 10.0f, w[i]);
+            }
+            else {
+                a[1][i] = max(a[0][i], a[1][i]);
+            }
+        }
+    }
 
- }
+    // return the results
+    vector<vector<float>> expected_winnings = {a[0], a[1]};
+    vector<vector<int>> lifelines_used = {b[0], b[1]};
+    return make_pair(expected_winnings, lifelines_used);
+}
 
  
