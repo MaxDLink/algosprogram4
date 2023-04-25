@@ -72,68 +72,60 @@ pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_1(vector<float> w
 
 }
 
-pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_2(vector<float> w, vector<float> p, int s, int t)
-{
-   int n = w.size();
-    vector<vector<float> > dist(n, vector<float>(n, numeric_limits<float>::infinity()));
-    vector<vector<int> > parent(n, vector<int>(n, -1));
+ pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_2(vector<float> w, vector<float> p, int s, int t)
+ {
+    int j = w.size() - 1; // number of questions
+    vector<vector<float> > a(3, vector<float>(j+1)); // expected money won
+    vector<vector<int> > b(3, vector<int>(j)); // decisions
+    float lifeline1_penalty = 10.0;
+    float lifeline2_penalty = 15.0;
 
-    for (int i = 0; i < n; i++) {
-        dist[i][i] = 0.0;
-        for (int j = i + 1; j < n; j++) {
-            float d = w[i] + w[j];
-            if (d <= p[j]) {
-                dist[i][j] = dist[j][i] = d;
-                parent[i][j] = j;
-                parent[j][i] = i;
-            }
+    // First, calculate the expected money won with no lifelines available
+    for (int i = 1; i <= j; i++) {
+        // The expected money won after answering the i-th question correctly is the maximum
+        // of two possibilities: quitting and taking the current winnings, or continuing and
+        // risking a wrong answer.
+        float quit_winnings = w[i-1];
+        float continue_winnings = p[i] * (a[0][i-1] + w[i]) + (1.0 - p[i]) * a[0][0];
+        a[0][i] = max(quit_winnings, continue_winnings);
+        b[0][i-1] = (continue_winnings > quit_winnings) ? 1 : 0;
+    }
+
+    // Now, calculate the expected money won with the "Get easier" lifeline available
+    for (int i = 1; i <= j; i++) {
+        float quit_winnings = w[i-1];
+        float continue_winnings_no_lifeline = p[i] * (a[1][i-1] + w[i]) + (1.0 - p[i]) * a[1][0];
+        float continue_winnings_with_lifeline = 0.0;
+        float lifeline1_p = min(0.5 + p[i]/2.0, 0.999);
+        if (i >= s) {
+            // If the contestant has answered at least s questions correctly, they get the larger prize
+            continue_winnings_with_lifeline = lifeline1_p * (a[1][i-1] + w[t]) + (1.0 - lifeline1_p) * a[1][i];
+        } else if (i >= t) {
+            // If the contestant has answered at least t questions correctly, they get the smaller prize
+            continue_winnings_with_lifeline = lifeline1_p * (a[1][i-1] + w[s]) + (1.0 - lifeline1_p) * a[1][i];
+        } else {
+            // Otherwise, the contestant gets nothing
+            continue_winnings_with_lifeline = 0.0;
+        }
+        // Check if using the lifeline is worth it
+        if (continue_winnings_with_lifeline >= continue_winnings_no_lifeline - lifeline1_penalty) {
+            a[1][i] = continue_winnings_with_lifeline - lifeline1_penalty;
+            b[1][i-1] = 2;
+        } else {
+            a[1][i] = continue_winnings_no_lifeline;
+            b[1][i-1] = 1;
         }
     }
 
-    for (int k = 0; k < n; k++) {
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                if (dist[i][k] + dist[k][j] < dist[i][j]) {
-                    dist[i][j] = dist[i][k] + dist[k][j];
-                    parent[i][j] = parent[i][k];
-                }
-            }
-        }
+    // Finally, calculate the expected money won with the "Get through" lifeline available
+    for (int i = 1; i <= j; i++) {
+        float quit_winnings = w[i-1];
+        float continue_winn;
+
     }
 
-    vector<vector<float> > weights;
-    vector<vector<int> > paths;
+    return make_pair(a[2], b[2]);
 
-    for (int i = 0; i < n; i++) {
-        for (int j = i + 1; j < n; j++) {
-            if (i == s && j == t || parent[i][j] != -1 && parent[j][i] != -1) {
-                vector<int> path;
-                int curr = i;
-                while (curr != j) {
-                    path.push_back(curr);
-                    curr = parent[curr][j];
-                }
-                path.push_back(j);
-
-                reverse(path.begin(), path.end());
-
-                vector<float> path_weights(path.size());
-                path_weights[0] = w[path[0]];
-                for (int k = 1; k < path.size(); k++) {
-                    path_weights[k] = w[path[k]];
-                    for (int l = 0; l < k; l++) {
-                        int u = path[l], v = path[k];
-                        path_weights[k] += (dist[u][v] - w[u] - w[v]) / 2.0;
-                    }
-                }
-
-                weights.push_back(path_weights);
-                paths.push_back(path);
-            }
-        }
-    }
-
-    return make_pair(weights, paths);
-}
+ }
 
  
