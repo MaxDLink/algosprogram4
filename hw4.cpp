@@ -6,80 +6,151 @@ using namespace std;
 //driver program should be indexed at zero. He will fix this? 
 pair< vector<float>, vector<int> >  WWWWW(vector<float> w, vector<float> p, int s, int t)
 {
-    // vector <float> res0;
-    // vector <int> res1;
+     int n = w.size();
+    vector<int> a(n);
 
-    // res0.push_back(1.0);
-    // res0.push_back(2.0);
-    // res1.push_back(1);
-    // return make_pair(res0, res1);
-    int j = w.size() - 1;
-    vector<float> dp(j + 1);
-    vector<int> decisions(j);
-    dp[0] = 0;
-    for (int i = 1; i <= j; i++) {
-        float max_money = 0;
-        int decision = 0;
-        for (int k = 1; k <= i; k++) {
-            float money;
-            if (k >= t) money = w[k];
-            else if (k >= s) money = w[s];
-            else money = 0;
-            money += p[k] * dp[i - k];
-            if (money > max_money) {
-                max_money = money;
-                decision = k;
+    for (int i = 0; i < n; i++) {
+        a[i] = i;
+    }
+
+    sort(a.begin(), a.end(), [&](int i, int j) {
+        return w[i] * p[j] > w[j] * p[i];
+    });
+
+    float sum_w = 0.0, sum_p = 0.0;
+    vector<float> x(n, 0.0);
+
+    for (int k = 0; k < n; k++) {
+        int i = a[k];
+        if (sum_p + p[i] <= t) {
+            x[i] = 1.0;
+            sum_p += p[i];
+            sum_w += w[i];
+        } else {
+            x[i] = (t - sum_p) / p[i];
+            sum_w += w[i] * x[i];
+            sum_p = t;
+            break;
+        }
+    }
+
+    if (sum_p < s) {
+        for (int k = n - 1; k >= 0; k--) {
+            int i = a[k];
+            if (sum_p + p[i] >= s) {
+                x[i] = (s - sum_p) / p[i];
+                sum_w += w[i] * x[i];
+                sum_p = s;
+                break;
+            } else {
+                x[i] = 1.0;
+                sum_p += p[i];
+                sum_w += w[i];
             }
         }
-        dp[i] = max_money;
-        decisions[i - 1] = (decision == i || max_money < dp[i - 1]);
     }
-    return {dp, decisions};
+
+    return make_pair(x, a);
 
 }
 
-pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_1(vector<float>, vector<float>, int, int)
+pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_1(vector<float> w, vector<float> p, int s, int t)
 {
-    vector < vector<float> > fres;
-    vector < vector<int> > fres2;
+    int n = w.size();
+    vector<vector<float>> dp(n + 1, vector<float>(t + 1, 0));
+    vector<vector<int>> prev(n + 1, vector<int>(t + 1, -1));
 
-    vector <float> res0;
-    vector <int> res1;
+    for (int i = 1; i <= n; i++) {
+        for (int j = s; j <= t; j++) {
+            if (j >= w[i - 1]) {
+                float val = dp[i - 1][j - w[i - 1]] + p[i - 1];
+                if (val > dp[i][j]) {
+                    dp[i][j] = val;
+                    prev[i][j] = j - w[i - 1];
+                }
+            }
+            if (dp[i - 1][j] > dp[i][j]) {
+                dp[i][j] = dp[i - 1][j];
+                prev[i][j] = j;
+            }
+        }
+    }
 
-    res0.push_back(1.0);
-    res0.push_back(2.0);
-    res1.push_back(1);
+    vector<int> items;
+    int j = t;
+    for (int i = n; i >= 1; i--) {
+        if (prev[i][j] != j) {
+            items.push_back(i - 1);
+            j = prev[i][j];
+        }
+    }
+    reverse(items.begin(), items.end());
 
-    fres.push_back(res0);
-    fres.push_back(res0);
-    fres2.push_back(res1);
-    fres2.push_back(res1);
-
-    return make_pair(fres, fres2);
+    return make_pair(dp, vector<vector<int>>{items});
 }
 
-pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_2(vector<float>, vector<float>, int, int)
+pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_2(vector<float> w, vector<float> p, int s, int t)
 {
-    vector < vector<float> > fres;
-    vector < vector<int> > fres2;
+   int n = w.size();
+    vector<vector<float>> dist(n, vector<float>(n, numeric_limits<float>::infinity()));
+    vector<vector<int>> parent(n, vector<int>(n, -1));
 
-    vector <float> res0;
-    vector <int> res1;
+    for (int i = 0; i < n; i++) {
+        dist[i][i] = 0.0;
+        for (int j = i + 1; j < n; j++) {
+            float d = w[i] + w[j];
+            if (d <= p[j]) {
+                dist[i][j] = dist[j][i] = d;
+                parent[i][j] = j;
+                parent[j][i] = i;
+            }
+        }
+    }
 
-    res0.push_back(1.0);
-    res0.push_back(2.0);
-    res1.push_back(1);
+    for (int k = 0; k < n; k++) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (dist[i][k] + dist[k][j] < dist[i][j]) {
+                    dist[i][j] = dist[i][k] + dist[k][j];
+                    parent[i][j] = parent[i][k];
+                }
+            }
+        }
+    }
 
-    fres.push_back(res0);
-    fres.push_back(res0);
-    fres.push_back(res0);
-    fres.push_back(res0);
-    fres2.push_back(res1);
-    fres2.push_back(res1);
-    fres2.push_back(res1);
-    fres2.push_back(res1);
+    vector<vector<float>> weights;
+    vector<vector<int>> paths;
 
-    return make_pair(fres, fres2);
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
+            if (i == s && j == t || parent[i][j] != -1 && parent[j][i] != -1) {
+                vector<int> path;
+                int curr = i;
+                while (curr != j) {
+                    path.push_back(curr);
+                    curr = parent[curr][j];
+                }
+                path.push_back(j);
+
+                reverse(path.begin(), path.end());
+
+                vector<float> path_weights(path.size());
+                path_weights[0] = w[path[0]];
+                for (int k = 1; k < path.size(); k++) {
+                    path_weights[k] = w[path[k]];
+                    for (int l = 0; l < k; l++) {
+                        int u = path[l], v = path[k];
+                        path_weights[k] += (dist[u][v] - w[u] - w[v]) / 2.0;
+                    }
+                }
+
+                weights.push_back(path_weights);
+                paths.push_back(path);
+            }
+        }
+    }
+
+    return make_pair(weights, paths);
 }
 
  
