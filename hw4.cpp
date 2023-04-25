@@ -4,6 +4,7 @@ using namespace std;
 //random values are stuffed into these functions so that output is printed. These values should be changed. 
 //no late pass will be used for this assignment.
 //driver program should be indexed at zero. He will fix this? 
+
 pair< vector<float>, vector<int> >  WWWWW(vector<float> w, vector<float> p, int s, int t)
 {
     int n = w.size();
@@ -13,9 +14,8 @@ pair< vector<float>, vector<int> >  WWWWW(vector<float> w, vector<float> p, int 
         a[i] = i;
     }
 
-    sort(a.begin(), a.end(), [&](int i, int j) {
-        return w[i] / p[i] > w[j] / p[j];
-    });
+    sort(a.begin(), a.end(), [&](int i, int j) {return w[i] / p[i] > w[j] / p[j];});
+
 
     float sum_w = 0.0, sum_p = 0.0;
     vector<float> x(n, 0.0);
