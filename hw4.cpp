@@ -30,7 +30,14 @@ std::pair<std::vector<float>, std::vector<int>> WWWWW(std::vector<float> w, std:
     return std::make_pair(E, Q);
 }
 
-vector<vector<int>> WWWWW_1(vector<float> w, vector<float> p, int s, int t) {
+pair<vector<vector<float> >, vector<vector<int> > > WWWWW_1(vector<float> w, vector<float> p, int s, int t) {
+    if (w.size() != p.size()) {
+        throw invalid_argument("Weight and profit vectors must have the same size.");
+    }
+    if (s < 0 || s > t || t >= w.size()) {
+        throw out_of_range("Invalid range for selecting items from the knapsack.");
+    }
+
     int n = w.size();
     float selected_items_weight = 0;
 
@@ -53,11 +60,12 @@ vector<vector<int>> WWWWW_1(vector<float> w, vector<float> p, int s, int t) {
             }
         }
     }
+
     vector<vector<float>> selected_items(2);
     vector<vector<int>> selected_indices(2);
 
     for (int k = 0; k <= 1; k++) {
-        float selected_items_weight = 0;  // initialize selected_items_weight to 0
+        selected_items_weight = 0;  // initialize selected_items_weight to 0
         for (int i = s; i <= t; i++) {
             if (dp[n][i] > dp[n][selected_items_weight]) {
                 selected_items_weight = i;
@@ -86,9 +94,9 @@ vector<vector<int>> WWWWW_1(vector<float> w, vector<float> p, int s, int t) {
         selected_indices[k] = indices;
     }
 
-    return selected_indices;
-
+    return make_pair(selected_items, selected_indices);
 }
+
 
 
 
