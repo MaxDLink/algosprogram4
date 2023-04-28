@@ -57,6 +57,7 @@ vector<vector<int>> WWWWW_1(vector<float> w, vector<float> p, int s, int t) {
     vector<vector<int>> selected_indices(2);
 
     for (int k = 0; k <= 1; k++) {
+        float selected_items_weight = 0;  // initialize selected_items_weight to 0
         for (int i = s; i <= t; i++) {
             if (dp[n][i] > dp[n][selected_items_weight]) {
                 selected_items_weight = i;
@@ -86,6 +87,7 @@ vector<vector<int>> WWWWW_1(vector<float> w, vector<float> p, int s, int t) {
     }
 
     return selected_indices;
+
 }
 
 
