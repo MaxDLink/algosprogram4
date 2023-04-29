@@ -7,7 +7,7 @@ using namespace std;
 //no late pass will be used for this assignment.
 //driver program should be indexed at zero. He will fix this? 
 
-std::pair<std::vector<float>, std::vector<int>> WWWWW(std::vector<float> w, std::vector<float> p, int s, int t)
+std::pair<std::vector<float>, std::vector<int> > WWWWW(std::vector<float> w, std::vector<float> p, int s, int t)
 {
     int j = w.size();
     std::vector<float> E(j, 0);
@@ -41,8 +41,8 @@ pair<vector<vector<float> >, vector<vector<int> > > WWWWW_1(vector<float> w, vec
     int n = w.size();
     float selected_items_weight = 0;
 
-    vector<vector<float>> dp(n + 1, vector<float>(t + 1, 0));
-    vector<vector<int>> path(n + 1, vector<int>(t + 1, -1));
+    vector<vector<float> > dp(n + 1, vector<float>(t + 1, 0));
+    vector<vector<int> > path(n + 1, vector<int>(t + 1, -1));
     for (int i = 1; i <= n; i++) {
         for (int j = s; j <= t; j++) {
             if (j >= w[i - 1]) {
@@ -61,8 +61,8 @@ pair<vector<vector<float> >, vector<vector<int> > > WWWWW_1(vector<float> w, vec
         }
     }
 
-    vector<vector<float>> selected_items(2);
-    vector<vector<int>> selected_indices(2);
+    vector<vector<float> > selected_items(2);
+    vector<vector<int> > selected_indices(2);
 
     for (int k = 0; k <= 1; k++) {
         selected_items_weight = 0;  // initialize selected_items_weight to 0
@@ -137,7 +137,7 @@ pair< vector< vector<float> > ,vector< vector<int> > > WWWWW_2(vector<float> w, 
         }
     }
 
-    return {a, b};
+    return make_pair(a, b);
 }
 
 
