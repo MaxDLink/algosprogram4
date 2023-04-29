@@ -1,11 +1,8 @@
 #include <vector>
-// #include <bits/stdc++.h>
 
 
 using namespace std;
-//random values are stuffed into these functions so that output is printed. These values should be changed. 
-//no late pass will be used for this assignment.
-//driver program should be indexed at zero. He will fix this? 
+
 
 std::pair<std::vector<float>, std::vector<int> > WWWWW(std::vector<float> w, std::vector<float> p, int s, int t)
 {
