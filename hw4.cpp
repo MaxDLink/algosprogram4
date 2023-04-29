@@ -1,5 +1,7 @@
 #include <vector>
 // #include <bits/stdc++.h>
+#include <stdexcept>
+#include <algorithm>
 
 
 using namespace std;
