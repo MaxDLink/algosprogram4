@@ -1,5 +1,5 @@
 #include <vector>
-#include <bits/stdc++.h>
+// #include <bits/stdc++.h>
 
 
 using namespace std;
@@ -100,7 +100,49 @@ pair<vector<vector<float> >, vector<vector<int> > > WWWWW_1(vector<float> w, vec
 
 
 
- pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_2(vector<float> w, vector<float> p, int s, int t)
+pair< vector< vector<float> > ,vector< vector<int> > > WWWWW_2(vector<float> w, vector<float> p, int s, int t) {
+    int j = w.size();
+    vector<vector<float> > a(4, vector<float>(j));
+    vector<vector<int> > b(4, vector<int>(j-1));
+
+    for (int i = 0; i < j; i++) {
+        a[0][i] = i < s ? 0 : (i >= t ? w[t-1] : w[s-1]);
+        a[1][i] = a[2][i] = a[3][i] = a[0][i];
+    }
+
+    for (int i = j-2; i >= 0; i--) {
+        for (int k = 0; k < 4; k++) {
+            float expected_val = p[i] * a[k][i+1] + (1-p[i]) * a[0][i];
+            float expected_val_using_get_easier = (k == 1 || k == 3) ? p[i] * a[k-1][i+1] + (1-p[i]) * a[0][i] - i * 10 : 0;
+            float expected_val_using_get_through = (k == 2 || k == 3) ? a[k-2][i+1] - i * 10 : 0;
+
+            if (expected_val >= a[k][i]) {
+                a[k][i] = expected_val;
+                b[k][i] = 1;
+            }
+
+            if (k == 1 || k == 3) {
+                if (expected_val_using_get_easier >= a[k][i]) {
+                    a[k][i] = expected_val_using_get_easier;
+                    b[k][i] = 2;
+                }
+            }
+
+            if (k == 2 || k == 3) {
+                if (expected_val_using_get_through >= a[k][i]) {
+                    a[k][i] = expected_val_using_get_through;
+                    b[k][i] = 3;
+                }
+            }
+        }
+    }
+
+    return {a, b};
+}
+
+
+
+ pair< vector< vector<float> > , vector< vector<int> > >  WWWWW_2notmenotmenotme(vector<float> w, vector<float> p, int s, int t)
  {
     int j = w.size() - 1;
     vector<vector<float> > a(2, vector<float>(j + 1));
