@@ -9,6 +9,29 @@ using namespace std;
 
 pair< vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s, int t)
 {
+    int initialVal = w.back(); //save last element for later appending
+    w.pop_back(); 
+    p.pop_back(); 
+    w.push_back(0.0); //push back 0 to entry 0, as there is no question 0
+    p.push_back(0.0); //push back 0 to entry 0, as there is no question 0
+    reverse(w.begin(), w.end()); //reverse the order of the vector
+    reverse(p.begin(), p.end()); //reverse the order of the vector
+
+    w.pop_back(); //pop back the last element of the vector
+    p.pop_back(); //pop back the last element of the vector
+
+    cout << "CHECkING VALUES in function : " << endl; 
+    for (int i = 0; i < w.size() ; i++)
+        {
+            cout << w[i] << " ";
+        }
+    cout << endl;
+    for(int i = 0; i < p.size(); i++)
+        {
+            cout << p[i] << " ";
+        }
+        cout << endl; 
+
     int numCorrect = 1; //keeps track of how many questions the contestant has correct 
     //int moneyRecieved = 0; //keeps track of how much money the contestant has recieved
     int j = w.size(); //infer j based on length of w array 
@@ -45,7 +68,7 @@ pair< vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s
     //pf[0] = w[0]; //profit is equal to the current amount of money (Wk)
     //pf.push_back(w[0]); //assign profit value to the vector 
 
-    for (int k = 0; k < j; k++)
+    for (int k = 0; k <= j; k++)
     {
          
         // cout << "P[k]: " << p[k] << endl;
@@ -74,18 +97,19 @@ pair< vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s
 
         //cout << "W[k]:" << w[k] << endl;
         pf[k] = pf[k-1] * p[k-1] +  moneyRecieved[k] * ((1 - p[k-1]));
-        cout << "PFK calc: " << pf[k] << endl;
+        //cout << "PFK calc: " << pf[k] << endl;
         // cout << "pf[k]: " << pf[k] << endl;
         // cout << "W[k]: " << w[k] << endl;
     
         if (pf[k] > w[k]) //if profit greater than current amount of money (Wk)
         {
             q[k] = 1; //not quit
-            q.push_back(1); //answer 
+            if(q.size() < 15)
+                q.push_back(1); //answer 
             //pf[k] = pf[k + 1]; //profit is equal to the next profit value
             //pf[k] = w[k]; //profit is equal to the current amount of money (Wk)
             pf.push_back(pf[k]); //assign profit value to the vector 
-            cout << "Decided not to quit: " << pf[k] << endl;
+            //cout << "Decided not to quit: " << pf[k] << endl;
 
             //cout << "PROFIT: " << pf[k] << endl;
             numCorrect++; //increment number of correct answers
@@ -93,11 +117,12 @@ pair< vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s
         else //quit 
         {
             q[k] = 0; //quit 
-            q.push_back(0); //quit 
+            if(q.size() < 15)
+                q.push_back(0); //quit 
             pf[k] = w[k]; //profit is equal to the current amount of money (Wk)
             //cout << "W[K] Vertex value: " << w[k] << endl;
             pf.push_back(w[k]); //assign profit value to the vector
-            cout << "Decided to quit: " << pf[k] << endl;
+            //cout << "Decided to quit: " << pf[k] << endl;
 
             //cout << "PF vertex value: " << pf[k] << endl;
             //break; //game ends 
@@ -109,6 +134,9 @@ pair< vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s
 
     reverse(pf.begin(), pf.end()); //reverse the order of the vector
     reverse(q.begin(), q.end()); //reverse the order of the vector
+    pf.pop_back(); //remove the last element of the vector
+    cout << "Initial value: " << initialVal << endl;
+    pf.push_back(initialVal); //add the initial value to the end of the vector
 
     return make_pair(pf, q);
 }
@@ -143,8 +171,21 @@ int main(int argc, char const *argv[])
             p.push_back(s);
         }
 
+    cout << "CHECkING VALUES: " << endl; 
+    for (int i = 0; i < j ; i++)
+        {
+            cout << w[i] << " ";
+        }
+    cout << endl;
+    for(int i = 0; i < j; i++)
+        {
+            cout << p[i] << " ";
+        }
+        cout << endl; 
+ 
     pair< vector<float>, vector<int> > res_base = WWWWW(w, p, s, t);
     
+
     cout << "\nBase case : \n\n";
     for (int i = 0; i < res_base.first.size(); i++)
         {
