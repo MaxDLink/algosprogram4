@@ -20,17 +20,17 @@ pair< vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s
     w.pop_back(); //pop back the last element of the vector
     p.pop_back(); //pop back the last element of the vector
 
-    cout << "CHECkING VALUES in function : " << endl; 
-    for (int i = 0; i < w.size() ; i++)
-        {
-            cout << w[i] << " ";
-        }
-    cout << endl;
-    for(int i = 0; i < p.size(); i++)
-        {
-            cout << p[i] << " ";
-        }
-        cout << endl; 
+    // cout << "CHECkING VALUES in function : " << endl; 
+    // for (int i = 0; i < w.size() ; i++)
+    //     {
+    //         cout << w[i] << " ";
+    //     }
+    // cout << endl;
+    // for(int i = 0; i < p.size(); i++)
+    //     {
+    //         cout << p[i] << " ";
+    //     }
+    //     cout << endl; 
 
     int numCorrect = 1; //keeps track of how many questions the contestant has correct 
     //int moneyRecieved = 0; //keeps track of how much money the contestant has recieved
@@ -108,7 +108,8 @@ pair< vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s
                 q.push_back(1); //answer 
             //pf[k] = pf[k + 1]; //profit is equal to the next profit value
             //pf[k] = w[k]; //profit is equal to the current amount of money (Wk)
-            pf.push_back(pf[k]); //assign profit value to the vector 
+            if(q.size() < 15)
+                pf.push_back(pf[k]); //assign profit value to the vector 
             //cout << "Decided not to quit: " << pf[k] << endl;
 
             //cout << "PROFIT: " << pf[k] << endl;
@@ -121,7 +122,8 @@ pair< vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s
                 q.push_back(0); //quit 
             pf[k] = w[k]; //profit is equal to the current amount of money (Wk)
             //cout << "W[K] Vertex value: " << w[k] << endl;
-            pf.push_back(w[k]); //assign profit value to the vector
+            if(q.size() < 15)
+                pf.push_back(w[k]); //assign profit value to the vector
             //cout << "Decided to quit: " << pf[k] << endl;
 
             //cout << "PF vertex value: " << pf[k] << endl;
@@ -129,13 +131,10 @@ pair< vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s
         }
     }
     
-    
-
-
     reverse(pf.begin(), pf.end()); //reverse the order of the vector
     reverse(q.begin(), q.end()); //reverse the order of the vector
     pf.pop_back(); //remove the last element of the vector
-    cout << "Initial value: " << initialVal << endl;
+    //cout << "Initial value: " << initialVal << endl;
     pf.push_back(initialVal); //add the initial value to the end of the vector
 
     return make_pair(pf, q);
@@ -171,17 +170,17 @@ int main(int argc, char const *argv[])
             p.push_back(s);
         }
 
-    cout << "CHECkING VALUES: " << endl; 
-    for (int i = 0; i < j ; i++)
-        {
-            cout << w[i] << " ";
-        }
-    cout << endl;
-    for(int i = 0; i < j; i++)
-        {
-            cout << p[i] << " ";
-        }
-        cout << endl; 
+    // cout << "CHECkING VALUES: " << endl; 
+    // for (int i = 0; i < j ; i++)
+    //     {
+    //         cout << w[i] << " ";
+    //     }
+    // cout << endl;
+    // for(int i = 0; i < j; i++)
+    //     {
+    //         cout << p[i] << " ";
+    //     }
+    //     cout << endl; 
  
     pair< vector<float>, vector<int> > res_base = WWWWW(w, p, s, t);
     
