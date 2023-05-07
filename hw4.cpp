@@ -52,7 +52,7 @@ pair< vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s
     //     }
     //     cout << endl; 
 
-    int numCorrect = 1; //keeps track of how many questions the contestant has correct 
+    int numCorrect = 15; //keeps track of how many questions the contestant has correct. starts at 15 because bottom up 
     //int moneyRecieved = 0; //keeps track of how much money the contestant has recieved
     int j = w.size(); //infer j based on length of w array 
 
@@ -67,22 +67,59 @@ pair< vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s
 
     //predetermined values 
     vector <float> moneyRecieved; 
-    moneyRecieved.push_back(0);
-    moneyRecieved.push_back(60);
-    moneyRecieved.push_back(60);
-    moneyRecieved.push_back(60);
-    moneyRecieved.push_back(60);
-    moneyRecieved.push_back(60);
-    moneyRecieved.push_back(8); 
-    moneyRecieved.push_back(8);
-    moneyRecieved.push_back(8);
-    moneyRecieved.push_back(8);
-    moneyRecieved.push_back(8);
-    moneyRecieved.push_back(0); 
-    moneyRecieved.push_back(0);
-    moneyRecieved.push_back(0);
-    moneyRecieved.push_back(0);
-    moneyRecieved.push_back(0);
+    moneyRecieved.push_back(0); //bottom up so finish the game at start so no money earned 
+    //cout << "60: " << endl; 
+    for(int i = 1; i <= numCorrect; i++){
+        if(i < 5){//i want 60 
+            for(int i = 0; i < s; i++){
+                cout << w[s] << " " << flush; 
+                moneyRecieved.push_back(w[s]);
+            }
+        }
+        //cout << "8: " << endl; 
+        if(i < 10){ //i want 8 
+            for(int i = 5; i < t; i++){
+                //cout << w[t] << " " << flush;
+                moneyRecieved.push_back(w[t]);
+            }
+        }
+        //cout << endl; 
+        if(i < 15){ //i want 0 
+            for(int i = 10; i < j; i++){
+                //cout << w[j] << " " << flush;
+                moneyRecieved.push_back(w[j]);
+            }
+        }
+        numCorrect--; //decrement numCorrect to simulate the contestant getting a question correct 
+    }
+
+    //cout << endl; 
+    cout << "ME R: " << endl; 
+    for(int i = 0; i < moneyRecieved.size(); i++){
+        cout <<  moneyRecieved[i] << " " << flush; 
+    }
+    cout << endl; 
+
+    // moneyRecieved.push_back(60);
+    // moneyRecieved.push_back(60);
+    // moneyRecieved.push_back(60);
+    // moneyRecieved.push_back(60);
+    // moneyRecieved.push_back(60);
+    // moneyRecieved.push_back(8); 
+    // moneyRecieved.push_back(8);
+    // moneyRecieved.push_back(8);
+    // moneyRecieved.push_back(8);
+    // moneyRecieved.push_back(8);
+    // moneyRecieved.push_back(0); 
+    // moneyRecieved.push_back(0);
+    // moneyRecieved.push_back(0);
+    // moneyRecieved.push_back(0);
+    // moneyRecieved.push_back(0);
+
+
+
+
+    
 
     //initial value for profit
     //pf[0] = w[0]; //profit is equal to the current amount of money (Wk)
@@ -105,15 +142,15 @@ pair< vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s
         //cout << "1-p[k]: " << 1-p[k] << endl;
         //cout << "K: " << k << endl; 
 
-        // if(numCorrect == s){
-        //     moneyRecieved = w[s];  
-        //     cout << "moneyS: " << moneyRecieved << endl;
-        // }
-        // if(numCorrect == t){
-        //     moneyRecieved = w[t]; 
-        //     cout << "moneyT: " << moneyRecieved << endl;
+        if(numCorrect == s){
+            moneyRecieved.push_back(w[s]);  
+            cout << "moneyS: " << moneyRecieved[k] << endl;
+        }
+        if(numCorrect == t){
+            moneyRecieved.push_back(w[t]); 
+            cout << "moneyT: " << moneyRecieved[k] << endl;
+        }
 
-        // }
 
         //cout << "W[k]:" << w[k] << endl;
         pf[k] = pf[k-1] * p[k-1] +  moneyRecieved[k] * ((1 - p[k-1]));
@@ -149,6 +186,9 @@ pair< vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s
             //cout << "PF vertex value: " << pf[k] << endl;
             //break; //game ends 
         }
+
+        
+
     }
     
     reverse(pf.begin(), pf.end()); //reverse the order of the vector
