@@ -1,123 +1,163 @@
-//this is a file for brainstorming code 
-
-#include <vector>
-#include <algorithm>
-#include <iostream>
-#include <algorithm>
-#include <cmath>
+#include <iostream> 
+#include <vector> 
+#include <fstream> 
+#include <algorithm> 
 using namespace std;
 
-pair<vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s, int t) {
-    int j = w.size() - 1;
-    vector<vector<float> > dp(j+1, vector<float>(j+1, 0));
-    vector<int> quit(j, 0);
 
-    for (int i = j; i >= s; i--) {
-        dp[i][j] = *max_element(w.begin()+s, w.begin()+t+1);
-    }
 
-    for (int i = j-1; i >= 0; i--) {
-        for (int j = i+1; j >= s; j--) {
-            dp[i][j] = p[i] * dp[i+1][j+1] + (1 - p[i]) * *max_element(w.begin()+s, w.begin()+t+1);
+
+pair< vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s, int t)
+{
+    int numCorrect = 1; //keeps track of how many questions the contestant has correct 
+    //int moneyRecieved = 0; //keeps track of how much money the contestant has recieved
+    int j = w.size(); //infer j based on length of w array 
+
+    vector <float> pf(j, 0); //profit values 
+    vector <int> q(j, 0); //quit values 
+
+    //math for predicting profit and loss
+    //pk * ck+1 + (1- pk) * w 
+    //1,000,000 * (35/100) + 32,000 * (65/100) = 248,300
+    //w * (p/100) + missing value * ((100-p)/100) = profit 
+    //6.13548 * 0.99 + 0 * 0.01 
+
+    //predetermined values 
+    vector <float> moneyRecieved; 
+    moneyRecieved.push_back(0);
+    moneyRecieved.push_back(60);
+    moneyRecieved.push_back(60);
+    moneyRecieved.push_back(60);
+    moneyRecieved.push_back(60);
+    moneyRecieved.push_back(60);
+    moneyRecieved.push_back(8); 
+    moneyRecieved.push_back(8);
+    moneyRecieved.push_back(8);
+    moneyRecieved.push_back(8);
+    moneyRecieved.push_back(8);
+    moneyRecieved.push_back(0); 
+    moneyRecieved.push_back(0);
+    moneyRecieved.push_back(0);
+    moneyRecieved.push_back(0);
+    moneyRecieved.push_back(0);
+
+    //initial value for profit
+    //pf[0] = w[0]; //profit is equal to the current amount of money (Wk)
+    //pf.push_back(w[0]); //assign profit value to the vector 
+
+    for (int k = 0; k < j; k++)
+    {
+         
+        // cout << "P[k]: " << p[k] << endl;
+        // cout << "pf[k+1]: " << pf[k+1] << endl;
+        // cout << "1 - p[k]: " << 1 - p[k-1] << endl;
+        // cout << "w[k]: " << w[k] << endl;
+
+        //pf[k] = p[k] * pf[k + 1] + (1 - p[k]) * w[k];
+        //pf[k] = (p[k] * (pf[k + 1]) + (0 * ((100 - w[k])/100));
+        //pf[k] = 6.13548 * p[k] + pf[k+1] * ((1 - p[k]));
+        //cout << "previous profit value: " << pf[k-1] << endl; 
+        //pf[k] = pf[k-1] * p[k] + pf[k+1] * ((1 - p[k]));
+        //pf[k] = pf[k-1] * p[k-1] + 60 * ((1 - p[k-1]));
+        //cout << "1-p[k]: " << 1-p[k] << endl;
+        //cout << "K: " << k << endl; 
+
+        // if(numCorrect == s){
+        //     moneyRecieved = w[s];  
+        //     cout << "moneyS: " << moneyRecieved << endl;
+        // }
+        // if(numCorrect == t){
+        //     moneyRecieved = w[t]; 
+        //     cout << "moneyT: " << moneyRecieved << endl;
+
+        // }
+
+        //cout << "W[k]:" << w[k] << endl;
+        pf[k] = pf[k-1] * p[k-1] +  moneyRecieved[k] * ((1 - p[k-1]));
+        cout << "PFK calc: " << pf[k] << endl;
+        // cout << "pf[k]: " << pf[k] << endl;
+        // cout << "W[k]: " << w[k] << endl;
+    
+        if (pf[k] > w[k]) //if profit greater than current amount of money (Wk)
+        {
+            q[k] = 1; //not quit
+            q.push_back(1); //answer 
+            //pf[k] = pf[k + 1]; //profit is equal to the next profit value
+            //pf[k] = w[k]; //profit is equal to the current amount of money (Wk)
+            pf.push_back(pf[k]); //assign profit value to the vector 
+            cout << "Decided not to quit: " << pf[k] << endl;
+
+            //cout << "PROFIT: " << pf[k] << endl;
+            numCorrect++; //increment number of correct answers
         }
+        else //quit 
+        {
+            q[k] = 0; //quit 
+            q.push_back(0); //quit 
+            pf[k] = w[k]; //profit is equal to the current amount of money (Wk)
+            //cout << "W[K] Vertex value: " << w[k] << endl;
+            pf.push_back(w[k]); //assign profit value to the vector
+            cout << "Decided to quit: " << pf[k] << endl;
 
-        for (int j = s-1; j >= 0; j--) {
-            dp[i][j] = p[i] * dp[i+1][j+1] + (1 - p[i]) * 0;
+            //cout << "PF vertex value: " << pf[k] << endl;
+            //break; //game ends 
         }
-
-        quit[i] = (dp[0][i+1] >= *max_element(dp[0].begin()+i+2, dp[0].begin()+j+1)) ? 1 : 0;
     }
+    
+    
 
-    return make_pair(dp[0], quit);
+
+    reverse(pf.begin(), pf.end()); //reverse the order of the vector
+    reverse(q.begin(), q.end()); //reverse the order of the vector
+
+    return make_pair(pf, q);
 }
 
-pair<vector<vector<float> >, vector<vector<int> > > WWWWW_1(vector<float> w, vector<float> p, int s, int t) {
-    int n = w.size(); // number of questions
 
-    vector<vector<float> > a(2, vector<float>(n)); // expected amount of money won
-    vector<vector<int> > b(2, vector<int>(n)); // decision to quit or answer
 
-    // initialize values for the last question
-    a[0][n-1] = w[n-1];
-    a[1][n-1] = w[n-1] * (p[n-1] + 0.5) + (1 - w[n-1]) * w[n-1]; // probability of correct answer is at least 0.5
-    b[0][n-1] = 0;
-    b[1][n-1] = 0;
+int main(int argc, char const *argv[])
+{
+    int j, s, t;
+    cin >> j >> s >> t;
+    vector<float> w;
+    vector<float> p;
 
-    for (int i = n-2; i >= 0; i--) {
-        // expected amount of money won without using lifeline
-        a[0][i] = w[i] * (a[0][i+1] + p[i] * (t-s+1)) + (1 - w[i]) * a[0][i+1];
+    // push back 0 to entry 0, as there is no question 0
+    w.push_back(0.0);
+    p.push_back(0.0);
 
-        // expected amount of money won with using lifeline
-        float p_lifeline = std::min(p[i] * 0.5f + 0.5f, 0.999f);        
-        a[1][i] = w[i] * (a[1][i+1] + p_lifeline * (t-s+1)) + (1 - w[i]) * (a[1][i+1] + w[i]);
-        
-        // decision to quit or answer without using lifeline
-        if (w[i] * (p[i] * (t-s+1) + a[0][i+1]) + (1 - w[i]) * a[0][i+1] >= w[i] * w[i]) {
-            b[0][i] = 1;
-        } else {
-            b[0][i] = 0;
+    for (int i = 0; i < j ; i++)
+        {
+            float s;
+            cin >> s;
+            w.push_back(s);
         }
-        
-        // decision to quit, continue without lifeline, or continue with lifeline
-        if (w[i] * (p[i] * (t-s+1) + a[1][i+1]) + (1 - w[i]) * (w[i] + a[1][i+1]) >= max(w[i] * w[i], w[i] * (p[i] + 0.5) * (t-s+1) + (1 - w[i]) * w[i])) {
-            b[1][i] = 1;
-        } else if (w[i] * (p[i] * (t-s+1) + a[0][i+1]) + (1 - w[i]) * a[0][i+1] >= w[i] * w[i]) {
-            b[1][i] = 2;
-        } else {
-            b[1][i] = 0;
+    for (int i = 0; i < j ; i++)
+        {
+            float s;
+            cin >> s;
+            if (s < 0.25)
+            s = 0.25;
+            if (s > 0.9999)
+            s = 0.9999;
+            p.push_back(s);
         }
-    }
 
-    return make_pair(a, b);
-}
-pair< vector < vector<float> > ,vector < vector<int> > > WWWWW_2(vector<float> w, vector<float> p, int s, int t) {
-    int n = w.size();
-    vector< vector<float> > a(4, vector<float>(n+1));
-    vector< vector<int> > b(4, vector<int>(n));
-    for (int i = 0; i <= n; i++) {
-        a[0][i] = s + w[i];
-    }
-    for (int j = 1; j <= n; j++) {
-        float e = 0.0;
-        for (int k = 0; k < j; k++) {
-            e += p[k] * w[k] * pow(1-p[k], j-k-1);
+    pair< vector<float>, vector<int> > res_base = WWWWW(w, p, s, t);
+    
+    cout << "\nBase case : \n\n";
+    for (int i = 0; i < res_base.first.size(); i++)
+        {
+        float x = round(res_base.first[i] * 1000) / 1000.0;    
+        cout << x << " ";
         }
-        for (int i = j; i <= n; i++) {
-            float q = 1.0;
-            for (int k = j-1; k < i-1; k++) {
-                q *= 1.0 - p[k];
-            }
-            a[0][i] += w[j-1] * q * (1.0 - p[i-1]) * (e + s);
+    cout << endl;
+    for (int i = 0; i < res_base.second.size(); i++)
+        {
+        cout << res_base.second[i] << " ";
         }
-    }
-    for (int i = 1; i <= n; i++) {
-        a[1][i] = a[0][i];
-        b[1][i-1] = 1;
-        if (i > 1) {
-            a[1][i] -= w[i-2] * p[i-2] * s;
-        }
-        for (int j = i+1; j <= n; j++) {
-            a[1][i] -= w[j-1] * p[j-2] * pow(1.0 - p[i-2], j-i) * s;
-        }
-    }
-    for (int i = 1; i <= n; i++) {
-        a[2][i] = a[0][i];
-        b[2][i-1] = 1;
-        for (int j = i+1; j <= n; j++) {
-            a[2][i] -= w[j-1] * pow(1.0 - p[i-1], j-i) * s * pow(p[i-1], t) * (1.0 - p[j-1]);
-        }
-    }
-    for (int i = 1; i <= n; i++) {
-        a[3][i] = a[1][i];
-        b[3][i-1] = 2;
-        for (int j = i+1; j <= n; j++) {
-            a[3][i] = max(a[3][i], a[2][j] - w[j-1]*pow(1.0 - p[i-1], j-i)*s*v*10.0);
-        }
-    }
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < n; j++) {
-            b[i][j] = (a[i][j+1] > a[i][j]) ? 1 : 0;
-        }
-    }
-    return make_pair(a, b);
+    cout << endl;
+
+
+    return 0;
 }
