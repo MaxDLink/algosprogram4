@@ -94,11 +94,11 @@ pair< vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s
     }
 
     //cout << endl; 
-    cout << "ME R: " << endl; 
-    for(int i = 0; i < moneyRecieved.size(); i++){
-        cout <<  moneyRecieved[i] << " " << flush; 
-    }
-    cout << endl; 
+    // cout << "ME R: " << endl; 
+    // for(int i = 0; i < moneyRecieved.size(); i++){
+    //     cout <<  moneyRecieved[i] << " " << flush; 
+    // }
+    // cout << endl; 
 
     // moneyRecieved.push_back(60);
     // moneyRecieved.push_back(60);
@@ -141,15 +141,6 @@ pair< vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s
         //pf[k] = pf[k-1] * p[k-1] + 60 * ((1 - p[k-1]));
         //cout << "1-p[k]: " << 1-p[k] << endl;
         //cout << "K: " << k << endl; 
-
-        if(numCorrect == s){
-            moneyRecieved.push_back(w[s]);  
-            cout << "moneyS: " << moneyRecieved[k] << endl;
-        }
-        if(numCorrect == t){
-            moneyRecieved.push_back(w[t]); 
-            cout << "moneyT: " << moneyRecieved[k] << endl;
-        }
 
 
         //cout << "W[k]:" << w[k] << endl;
