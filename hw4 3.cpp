@@ -49,7 +49,7 @@ pair< vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s
     for(int i = 1; i <= numCorrect; i++){
         if(i < 5){//i want 60 
             for(int i = 0; i < s; i++){
-                //cout << w[s] << " " << flush; 
+                cout << w[s] << " " << flush; 
                 moneyRecieved.push_back(w[s]);
             }
         }
@@ -70,7 +70,7 @@ pair< vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s
         numCorrect--; //decrement numCorrect to simulate the contestant getting a question correct 
     }
 
-    // cout << endl; 
+    //cout << endl; 
     // cout << "ME R: " << endl; 
     // for(int i = 0; i < moneyRecieved.size(); i++){
     //     cout <<  moneyRecieved[i] << " " << flush; 
@@ -133,7 +133,7 @@ pair< vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s
                 q.push_back(1); //answer 
             //pf[k] = pf[k + 1]; //profit is equal to the next profit value
             //pf[k] = w[k]; //profit is equal to the current amount of money (Wk)
-            if(q.size() < 16)
+            if(q.size() < 15)
                 pf.push_back(pf[k]); //assign profit value to the vector 
             //cout << "Decided not to quit: " << pf[k] << endl;
 
@@ -161,18 +161,11 @@ pair< vector<float>, vector<int> > WWWWW(vector<float> w, vector<float> p, int s
     
     reverse(pf.begin(), pf.end()); //reverse the order of the vector
     reverse(q.begin(), q.end()); //reverse the order of the vector
-    vector <float> result; //result values 
-   
     pf.pop_back(); //remove the last element of the vector
     //cout << "Initial value: " << initialVal << endl;
     pf.push_back(initialVal); //add the initial value to the end of the vector
 
-     for(int i = 8; i < pf.size(); i++){
-        //cout << "PF: " << pf[i] << endl;
-        result.push_back(pf[i]);
-    }
-
-    return make_pair(result, q);
+    return make_pair(pf, q);
 }
 
 pair< vector< vector<float> > ,vector< vector<int> > > WWWWW_1(vector<float> w, vector<float> p, int s, int t)
